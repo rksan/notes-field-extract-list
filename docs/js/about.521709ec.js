@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunknotes_field_output"]=self["webpackChunknotes_field_output"]||[]).push([[443],{4007:function(t,n,u){u.r(n),u.d(n,{default:function(){return l}});var e=u(3396);const s={class:"about"},a=(0,e._)("h1",null,"This is an about page",-1),o=[a];function r(t,n){return(0,e.wg)(),(0,e.iD)("div",s,o)}var i=u(89);const c={},f=(0,i.Z)(c,[["render",r]]);var l=f}}]);
+//# sourceMappingURL=about.521709ec.js.map

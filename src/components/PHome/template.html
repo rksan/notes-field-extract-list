@@ -1,0 +1,33 @@
+<div class="container">
+  <form>
+    <div class="mb-3">
+      <label class="form-label">xml:</label>
+      <input
+        class="form-control"
+        type="file"
+        accept=".xml,.dxl"
+        @change="doChangeFile"
+      />
+    </div>
+    <hr />
+    <div class="mb-3">
+      <label class="form-label">form:</label>
+      <select class="form-select" size="5" @change="doChangeSelect">
+        <template v-for="(name, idx) in model.formNames" :key="idx">
+          <option>{{ name }}</option>
+        </template>
+      </select>
+    </div>
+    <hr />
+    <button @click="doClickCopy" class="btn btn-success">Copy</button>
+    <hr />
+    <div class="mb-3">
+      <label class="form-label">fields : </label>
+      <textarea
+        class="form-control"
+        id="txa"
+        v-model="model.txaValue"
+      ></textarea>
+    </div>
+  </form>
+</div>
