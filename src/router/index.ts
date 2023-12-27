@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -18,8 +18,17 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
+const BASE_URL = (() => {
+  if (process.env.NODE_ENV === "production") {
+    return process.env.BASE_URL + "<your-github-project-name>";
+  } else {
+    return process.env.BASE_URL;
+  }
+})();
+
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  // history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(BASE_URL),
   routes,
 });
 
