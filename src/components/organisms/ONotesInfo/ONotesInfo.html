@@ -1,0 +1,54 @@
+<section>
+  <h2>Notes info</h2>
+  <div class="mb-3">
+    <label class="form-label" for="file-notes">xml:</label>
+    <input
+      id="file-notes"
+      class="form-control"
+      type="file"
+      accept=".xml,.dxl"
+      @change="doChangeFile"
+    />
+    <div>{{model.appName}}</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label"
+      >form({{(model.formNameList ||[]).length}}) :
+    </label>
+    <select
+      class="form-select"
+      @change="doChangeSelect"
+      v-model="model.formName"
+    >
+      <option value="" disabled>--- select form ---</option>
+      <template v-for="(name, idx) in model.formNameList" :key="idx">
+        <option>{{ name }}</option>
+      </template>
+    </select>
+  </div>
+  <div class="mb-3">
+    <details>
+      <summary>subform({{(model.subFormNameList || []).length}}) :</summary>
+      <div class="row">
+        <template v-for="(name,idx) in model.subFormNameList" :key="idx">
+          <div class="form-check col-auto">
+            <input
+              type="checkbox"
+              :name="'CheckSubForm'+(idx)"
+              :id="'chk-subform'+(idx)"
+              :value="name"
+              v-model="model.subFormNames"
+              @change="doChangeSelect"
+            />
+            <label :for="'chk-subform'+(idx)">{{name}}</label>
+          </div>
+        </template>
+      </div>
+    </details>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">fields : </label>
+    <button @click="doClickCopy" class="btn btn-success">Copy</button>
+    <textarea class="form-control" id="txa" v-model="model.txaValue"></textarea>
+  </div>
+</section>
