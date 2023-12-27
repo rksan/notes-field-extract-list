@@ -1,8 +1,9 @@
 <section>
   <h2>kintone info</h2>
   <div class="mb-3">
-    <label class="form-label">json:</label>
+    <label for="file-kintone" class="form-label">json:</label>
     <input
+      id="file-kintone"
       class="form-control"
       type="file"
       accept=".json"
@@ -11,10 +12,9 @@
     <p>{{ local.appName }}</p>
   </div>
 
-  <button @click="doClickCopy" class="btn btn-success">Copy</button>
-  <hr />
   <div class="mb-3">
-    <label class="form-label">fields : </label>
+    <label for="txa-kintone" class="form-label">fields : </label>
+    <button @click="doClickCopy" class="btn btn-success">Copy</button>
     <textarea
       class="form-control"
       id="txa-kintone"

@@ -20,14 +20,14 @@ const routes: Array<RouteRecordRaw> = [
 
 const BASE_URL = (() => {
   if (process.env.NODE_ENV === "production") {
-    return process.env.BASE_URL + "<your-github-project-name>";
+    return process.env.BASE_URL + "notes-field-extract-list";
   } else {
     return process.env.BASE_URL;
   }
 })();
 
 const router = createRouter({
-  //history: createWebHistory(process.env.BASE_URL),
+  // history: createWebHistory(process.env.BASE_URL),
   history: createWebHashHistory(BASE_URL),
   routes,
 });
