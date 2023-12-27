@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const BASE_URL = (() => {
   if (process.env.NODE_ENV === "production") {
-    return process.env.BASE_URL + "<your-github-project-name>";
+    return process.env.BASE_URL + "notes-field-extract-list";
   } else {
     return process.env.BASE_URL;
   }
