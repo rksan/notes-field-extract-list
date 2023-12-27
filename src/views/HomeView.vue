@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import PHomeVue from "@/components/PHome/index.vue"; // @ is an alias to /src
+import PHomeVue from "@/components/pages/PHome"; // @ is an alias to /src
 
 export default defineComponent({
   name: "HomeView",
