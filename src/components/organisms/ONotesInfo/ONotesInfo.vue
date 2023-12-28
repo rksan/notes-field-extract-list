@@ -15,12 +15,16 @@ import {
 const emits: ComponentOptions["emits"] = ["update-fields"];
 
 const setup: ComponentOptions["setup"] = ($props, { emit }) => {
-  const local = reactive({
-    //xml: ref(),
-    forms: ref(),
-    subforms: ref(),
-    fields: ref(),
-  });
+  type LocalMember = {
+    forms?: Node[];
+    subforms?: Node[];
+    fields?: Element[];
+  };
+  const local: LocalMember = {
+    forms: undefined,
+    subforms: undefined,
+    fields: undefined,
+  };
 
   const model = reactive({
     appName: ref(),
@@ -98,7 +102,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       model.subFormNames = [];
 
       const form = getForm(forms, defaultFormName[0]);
-      let fields = null;
+      let fields = undefined;
       let txaValue = "";
 
       if (form) {
@@ -126,13 +130,16 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     const formName = model.formName;
     const subFormNames = model.subFormNames;
 
-    const forms = local.forms as NodeList;
+    const forms = local.forms;
+    if (!forms) return;
+
     const form = getForm(forms, formName);
+
     const subForms = (() => {
       let subforms: Element[] = [];
 
       subFormNames.forEach((name) => {
-        const result = getForm(local.subforms, name);
+        const result = local.subforms ? getForm(local.subforms, name) : false;
         if (result) {
           subforms.push(result);
         }
@@ -181,7 +188,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     }
   };
   return {
-    local,
+    //local,
     model,
     doChangeFile,
     doChangeSelect,
