@@ -33,12 +33,17 @@ const getControlInfo = (control: JsonObject) => {
 const emits: ComponentOptions["emits"] = ["update-fields"];
 
 const setup: ComponentOptions["setup"] = ($props, { emit }) => {
-  const local = reactive({
-    json: ref(),
-    appName: ref(),
-    controls: ref(),
-  });
+  type LocalMember = {
+    json?: JsonObject;
+    controls?: JsonObject[];
+  };
+  const local: LocalMember = {
+    json: undefined,
+    controls: undefined,
+  };
+
   const model = reactive({
+    appName: ref(),
     txaValue: ref(""),
   });
 
@@ -82,8 +87,9 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       });
 
       local.json = json;
-      local.appName = json.name;
       local.controls = controls;
+
+      model.appName = json.name;
       model.txaValue = txaValue;
 
       doEmitUpdateFilles();
@@ -105,7 +111,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     }
   };
   return {
-    local,
+    //local,
     model,
     doChangeFile,
     doClickCopy,

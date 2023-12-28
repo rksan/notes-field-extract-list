@@ -188,11 +188,14 @@ class CFieldMapping implements FieldMapping {
   }
 
   toArray(): string[][] {
-    return this.#result.map((info) => info.toArray());
+    return this.#result.concat().map((info) => info.toArray());
   }
 
   toString(separator?: string): string {
-    return this.#result.map((info) => info.toString(separator)).join("\n");
+    return this.#result
+      .concat()
+      .map((info) => info.toString(separator))
+      .join("\n");
   }
 }
 

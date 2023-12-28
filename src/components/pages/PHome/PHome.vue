@@ -5,26 +5,31 @@ import {
   ONotesInfoVue,
   OTableVue,
 } from "@/components/organisms";
-import { fieldMapping } from "@/lib/mapping";
+import { FieldMapping, fieldMapping } from "@/lib/mapping";
+import { JsonObject } from "@/lib/types/Json";
 
 const setup = () => {
-  const local = reactive({
-    kintone: ref(),
-    notes: ref(),
-    mapping: ref(),
-  });
+  type LocalMember = {
+    kintoneFields?: JsonObject[];
+    notesFields?: Element[];
+    fieldMapping?: FieldMapping;
+  };
+  const local: LocalMember = {
+    kintoneFields: undefined,
+    notesFields: undefined,
+    fieldMapping: undefined,
+  };
 
   const model = reactive({
     tables: ref(),
   });
 
   const handleEmitUpdateFieldsOnKintone = (data: { fields: [] }) => {
-    local.kintone = data.fields;
+    local.kintoneFields = data.fields;
   };
 
   const handleEmitUpdateFieldsOnNotes = (data: { fields: [] }) => {
-    console.log("data=", data);
-    local.notes = data.fields;
+    local.notesFields = data.fields;
   };
 
   const doClickMapping = (event: Event) => {
@@ -33,8 +38,8 @@ const setup = () => {
       event.stopPropagation();
     }
 
-    if (local.kintone && local.notes) {
-      const mapping = fieldMapping(local.kintone, local.notes);
+    if (local.kintoneFields && local.notesFields) {
+      const mapping = fieldMapping(local.kintoneFields, local.notesFields);
 
       const result = mapping.result;
       const tables = {
@@ -44,7 +49,7 @@ const setup = () => {
         }),
       };
 
-      local.mapping = mapping;
+      local.fieldMapping = mapping;
       model.tables = tables;
     }
   };
@@ -55,15 +60,16 @@ const setup = () => {
       event.stopPropagation();
     }
 
-    if (local.mapping) {
-      const mapping = local.mapping;
+    if (local.fieldMapping) {
+      //const mapping = fieldMapping(local.kintone, local.notes);
+      const mapping = local.fieldMapping;
 
       navigator.clipboard.writeText(mapping.toString());
     }
   };
 
   return {
-    local,
+    //local,
     model,
     handleEmitUpdateFieldsOnKintone,
     handleEmitUpdateFieldsOnNotes,
