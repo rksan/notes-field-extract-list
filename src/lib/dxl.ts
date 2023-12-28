@@ -139,9 +139,12 @@ export const getForm = (
   return result;
 };
 
-export const getFields = (form: Element): NodeList => {
-  const fields = form.querySelectorAll("field");
-  return fields;
+export const getFields = (form: Element): Element[] => {
+  const nodes = form.querySelectorAll("field");
+
+  return Array.from(nodes).map((node) => {
+    return node as Element;
+  });
 };
 
 export const getFieldInfo = (field: Element) => {

@@ -2,11 +2,28 @@
   <form style="text-align: left">
     <div class="row">
       <div class="col">
-        <ONotesInfoVue></ONotesInfoVue>
+        <OKintoneInfoVue
+          @update-fields="handleEmitUpdateFieldsOnKintone($event)"
+        ></OKintoneInfoVue>
       </div>
       <div class="col">
-        <OKintoneInfoVue></OKintoneInfoVue>
+        <ONotesInfoVue
+          @update-fields="handleEmitUpdateFieldsOnNotes($event)"
+        ></ONotesInfoVue>
       </div>
     </div>
   </form>
+  <div class="row">
+    <div class="col">
+      <button class="btn btn-primary" @click="doClickMapping">Mappting</button>
+    </div>
+    <div class="col">
+      <button class="btn btn-success" @click="doClickCopy">Copy</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <OTableVue :table="model.tables"></OTableVue>
+    </div>
+  </div>
 </div>

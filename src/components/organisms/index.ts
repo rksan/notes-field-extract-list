@@ -1,4 +1,6 @@
 import OKintoneInfoVue from "./OKintoneInfo";
 import ONotesInfoVue from "./ONotesInfo";
 
-export { OKintoneInfoVue, ONotesInfoVue };
+import OTableVue from "./OTable";
+
+export { OKintoneInfoVue, ONotesInfoVue, OTableVue };

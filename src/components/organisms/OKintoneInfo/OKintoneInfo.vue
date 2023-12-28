@@ -1,43 +1,51 @@
 <script lang="ts">
+import { ComponentOptions } from "vue";
 import { defineComponent, reactive, ref } from "vue";
 
 import readAsText from "@/lib/readAsText";
 
-type JsonPrimitive = string | number | boolean | null;
+import { JsonObject, JsonPrimitive } from "@/lib/types/Json";
+import { getFormEntry, doAnalyzeForm } from "@/lib/doAnalyzeKintoneTemplate";
 
-type JsonArray = JsonPrimitive[] | JsonObject[];
+const getControlInfo = (control: JsonObject) => {
+  const type = control.type as string;
+  let infos: JsonPrimitive[];
+  switch (type.toUpperCase()) {
+    case "LABEL":
+      infos = [
+        control.formatted as JsonPrimitive,
+        control.label as JsonPrimitive,
+        control.type as JsonPrimitive,
+      ];
+      break;
 
-type JsonObject = {
-  [key: string]: JsonPrimitive | JsonObject | JsonArray;
+    default:
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        control.type as JsonPrimitive,
+      ];
+      break;
+  }
+  return infos;
 };
 
-type Json = JsonPrimitive | JsonArray | JsonObject;
+const emits: ComponentOptions["emits"] = ["update-fields"];
 
-const getFields = (app: JsonObject): JsonObject[] => {
-  //if (!app.schema) return [];
-
-  const schema = app.schema as JsonObject;
-  const table = schema.table as JsonObject;
-  const fieldList = table.fieldList as JsonObject;
-
-  const fields: JsonObject[] = Object.entries(fieldList).map(([key, value]) => {
-    //const id = key;
-    const field = value as JsonObject;
-
-    return field;
-  });
-
-  return fields;
-};
-
-const setup = () => {
+const setup: ComponentOptions["setup"] = ($props, { emit }) => {
   const local = reactive({
     json: ref(),
     appName: ref(),
+    controls: ref(),
   });
   const model = reactive({
     txaValue: ref(""),
   });
+
+  const doEmitUpdateFilles = () => {
+    const fields = local.controls;
+    emit("update-fields", { fields });
+  };
 
   const doChangeFile = (event: Event) => {
     if (event) {
@@ -62,19 +70,23 @@ const setup = () => {
 
       const json = JSON.parse(result);
       const app = json.apps[0];
-      const fields = getFields(app);
-
-      //console.log("fields=", fields);
+      const form = getFormEntry(app);
+      const controls = doAnalyzeForm(form);
 
       let txaValue = "";
 
-      fields.forEach((field) => {
-        txaValue += field.var + "\t" + field.type + "\n";
+      Array.from(controls).forEach((item) => {
+        const controlInfo = getControlInfo(item);
+
+        txaValue += controlInfo.join("\t") + "\n";
       });
 
       local.json = json;
       local.appName = json.name;
+      local.controls = controls;
       model.txaValue = txaValue;
+
+      doEmitUpdateFilles();
     });
   };
 
@@ -102,6 +114,7 @@ const setup = () => {
 
 export default defineComponent({
   name: "o-kintone-info",
+  emits,
   setup,
 });
 </script>

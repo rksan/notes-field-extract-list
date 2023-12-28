@@ -1,0 +1,20 @@
+<table class="table table-striped">
+  <template v-if="table.ths">
+    <thead>
+      <tr>
+        <template v-for="(th, colIdx) in table.ths">
+          <th>{{th}}</th>
+        </template>
+      </tr>
+    </thead>
+  </template>
+  <tbody>
+    <template v-for="(tr,rowIdx) in table.trs" :key="rowIdx">
+      <tr>
+        <template v-for="(td,colIdx) in tr.tds" :key="colIdx">
+          <td>{{td}}</td>
+        </template>
+      </tr>
+    </template>
+  </tbody>
+</table>
