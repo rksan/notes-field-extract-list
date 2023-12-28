@@ -1,4 +1,5 @@
 <script lang="ts">
+import { ComponentOptions } from "vue";
 import { defineComponent, reactive, ref } from "vue";
 import readAsText from "@/lib/readAsText";
 import {
@@ -11,11 +12,14 @@ import {
   getFieldInfo,
 } from "@/lib/dxl";
 
-const setup = () => {
+const emits: ComponentOptions["emits"] = ["update-fields"];
+
+const setup: ComponentOptions["setup"] = ($props, { emit }) => {
   const local = reactive({
     //xml: ref(),
     forms: ref(),
     subforms: ref(),
+    fields: ref(),
   });
 
   const model = reactive({
@@ -26,6 +30,11 @@ const setup = () => {
     subFormNames: ref([]),
     txaValue: ref(""),
   });
+
+  const doEmitUpdateFilles = () => {
+    const fields = local.fields;
+    return emit("update-fields", { fields });
+  };
 
   const reset = () => {
     model.appName = "";
@@ -89,10 +98,11 @@ const setup = () => {
       model.subFormNames = [];
 
       const form = getForm(forms, defaultFormName[0]);
+      let fields = null;
       let txaValue = "";
 
       if (form) {
-        const fields = getFields(form);
+        fields = getFields(form);
 
         fields.forEach((node: Node) => {
           const field = node as Element;
@@ -100,7 +110,10 @@ const setup = () => {
         });
       }
 
+      local.fields = fields;
       model.txaValue = txaValue;
+
+      doEmitUpdateFilles();
     });
   };
 
@@ -128,18 +141,18 @@ const setup = () => {
       return subforms;
     })();
 
+    let fields: Element[] = [];
     let txaValue = "";
 
     if (form) {
-      const fields = getFields(form);
+      fields = getFields(form);
 
-      fields.forEach((node: Node) => {
-        const field = node as Element;
+      fields.forEach((field) => {
         txaValue += getFieldInfo(field);
       });
 
       subForms.forEach((subform) => {
-        const fields = getFields(subform);
+        fields = fields.concat(getFields(subform));
         fields.forEach((node: Node) => {
           const field = node as Element;
           txaValue += getFieldInfo(field);
@@ -147,7 +160,10 @@ const setup = () => {
       });
     }
 
+    local.fields = fields;
     model.txaValue = txaValue;
+
+    doEmitUpdateFilles();
   };
 
   const doClickCopy = (event: Event) => {
@@ -175,6 +191,7 @@ const setup = () => {
 
 export default defineComponent({
   name: "o-notes-info",
+  emits,
   setup,
 });
 </script>
