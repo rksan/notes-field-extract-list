@@ -45,7 +45,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
   const model = reactive({
     appNames: ref(),
     appName: ref(),
-    selectApp: ref(),
+    selectApp: ref(""),
     txaValue: ref(""),
   });
 
@@ -86,26 +86,6 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
 
       local.json = json;
       model.appNames = appNames;
-
-      /* const app = json.apps[0];
-      const form = getFormEntry(app);
-      const controls = doAnalyzeForm(form);
-
-      let txaValue = "";
-
-      Array.from(controls).forEach((item) => {
-        const controlInfo = getControlInfo(item);
-
-        txaValue += controlInfo.join("\t") + "\n";
-      });
-
-      local.json = json;
-      local.controls = controls;
-
-      model.appName = json.name;
-      model.txaValue = txaValue;
-
-      doEmitUpdateFilles(); */
     });
   };
 
@@ -114,7 +94,9 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
 
     if (!json) return;
 
-    const idx = model.selectApp;
+    if (!model.selectApp) return;
+
+    const idx = Number(model.selectApp);
 
     const apps = json.apps as JsonObject[];
 
