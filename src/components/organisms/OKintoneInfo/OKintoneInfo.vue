@@ -43,7 +43,9 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
   };
 
   const model = reactive({
+    appNames: ref(),
     appName: ref(),
+    selectApp: ref(),
     txaValue: ref(""),
   });
 
@@ -74,7 +76,18 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       const result = reader.result as string;
 
       const json = JSON.parse(result);
-      const app = json.apps[0];
+      const appNames: string[] = [];
+
+      Array.from(json.apps as JsonObject[]).forEach((app) => {
+        const info = app.info as JsonObject;
+        const name = info.name as string;
+        appNames.push(name);
+      });
+
+      local.json = json;
+      model.appNames = appNames;
+
+      /* const app = json.apps[0];
       const form = getFormEntry(app);
       const controls = doAnalyzeForm(form);
 
@@ -92,8 +105,37 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       model.appName = json.name;
       model.txaValue = txaValue;
 
-      doEmitUpdateFilles();
+      doEmitUpdateFilles(); */
     });
+  };
+
+  const doChangeAppName = () => {
+    const json = local.json;
+
+    if (!json) return;
+
+    const idx = model.selectApp;
+
+    const apps = json.apps as JsonObject[];
+
+    const app = apps[idx];
+
+    const form = getFormEntry(app);
+    const controls = doAnalyzeForm(form);
+
+    let txaValue = "";
+
+    Array.from(controls).forEach((item) => {
+      const controlInfo = getControlInfo(item);
+
+      txaValue += controlInfo.join("\t") + "\n";
+    });
+
+    local.controls = controls;
+
+    model.txaValue = txaValue;
+
+    doEmitUpdateFilles();
   };
 
   const doClickCopy = (event: Event) => {
@@ -114,6 +156,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     //local,
     model,
     doChangeFile,
+    doChangeAppName,
     doClickCopy,
   };
 };
