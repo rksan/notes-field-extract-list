@@ -1,7 +1,7 @@
 import type { JsonObject } from "./types/Json";
 import type { MatchingConfigEntry, MatchingConfigs } from "./types/matchings";
 
-import { MAtCHING_CONFIG_TYPES } from "./matchingConfig";
+import { MATCHING_CONFIG_TYPES } from "./matchingConfig";
 
 export const matchingName = (
   kintoneFieldInfo: JsonObject,
@@ -31,37 +31,47 @@ export const matchingName = (
 export const matchingType = (
   kintoneField: JsonObject,
   notesField: Element,
-  configs: MatchingConfigEntry | MatchingConfigs = MAtCHING_CONFIG_TYPES
-): boolean => {
-  let result = false;
-
-  if (typeof configs === "boolean") {
+  configs?: MatchingConfigEntry | MatchingConfigs
+): boolean | null => {
+  if (configs === undefined) {
     return false;
-  } else if (typeof configs === "string") {
-    result = configs === notesField.getAttribute("type");
-  } else if (typeof configs === "function") {
-    result = configs(kintoneField, notesField);
-  } else if (typeof configs === "object") {
-    const kType = configs.type as string;
-    const config = configs[kType];
-    result = config ? matchingType(kintoneField, notesField, config) : false;
-  } else {
-    result = false;
   }
 
-  return result;
+  if (configs === null) {
+    return null;
+  } else if (typeof configs === "boolean") {
+    return false;
+  } else if (typeof configs === "string") {
+    return configs === notesField.getAttribute("type");
+  } else if (typeof configs === "function") {
+    return configs(kintoneField, notesField);
+  } else if (typeof configs === "object") {
+    const kType = kintoneField.type as string;
+    const config = configs[kType];
+
+    if (config === null) {
+      return null;
+    } else {
+      return matchingType(kintoneField, notesField, config);
+    }
+  } else {
+    return false;
+  }
 };
 
-export const getMatchingAll = () => {
+export const getMatchingAll = (
+  configs: MatchingConfigs = MATCHING_CONFIG_TYPES
+) => {
+  //const configs = MATCHING_CONFIG_TYPES;
   return [
     (k: JsonObject, n: Element) => {
-      return matchingName(k, n) && matchingType(k, n);
+      return matchingName(k, n) && matchingType(k, n, configs);
     },
     (k: JsonObject, n: Element) => {
-      return matchingName(k, n, "postfix") && matchingType(k, n);
+      return matchingName(k, n, "postfix") && matchingType(k, n, configs);
     },
     (k: JsonObject, n: Element) => {
-      return matchingName(k, n, "prefix") && matchingType(k, n);
+      return matchingName(k, n, "prefix") && matchingType(k, n, configs);
     },
     (k: JsonObject, n: Element) => {
       return matchingName(k, n);

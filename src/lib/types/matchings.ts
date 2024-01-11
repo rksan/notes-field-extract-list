@@ -1,6 +1,7 @@
 import type { JsonObject } from "./Json";
 
 export type MatchingConfigEntry =
+  | null
   | boolean
   | string
   | {

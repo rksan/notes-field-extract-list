@@ -1,7 +1,7 @@
 import type { MatchingConfigs } from "./types/matchings";
 
-export const MAtCHING_CONFIG_TYPES: MatchingConfigs = {
-  LABEL: false,
+export const MATCHING_CONFIG_TYPES: MatchingConfigs = {
+  LABEL: null,
 
   SINGLE_LINE_TEXT: (k, n) => {
     return (
@@ -9,16 +9,21 @@ export const MAtCHING_CONFIG_TYPES: MatchingConfigs = {
     );
   },
 
-  EDITOR: false,
+  EDITOR: "richtext",
 
   MULTIPLE_LINE_TEXT: (k, n) => {
     return (
       n.getAttribute("type") === "text" && !!n.getAttribute("allowmultivalues")
     );
   },
+
   DECIMAL: "number",
 
-  CALC: false,
+  CALC: (k, n) => {
+    return (
+      n.getAttribute("type") === "text" && n.getAttribute("kind") === "computed"
+    );
+  },
 
   SINGLE_CHECK: "radiobutton",
 
@@ -63,16 +68,32 @@ export const MAtCHING_CONFIG_TYPES: MatchingConfigs = {
   },
 
   FILE: false,
+
   LINK: false,
-  USER_SELECT: false,
+
+  USER_SELECT: "names",
+
   ORGANIZATION_SELECT: false,
+
   GROUP_SELECT: false,
+
   REFERENCE_TABLE: false,
+
   SPACER: false,
-  HR: false,
+
+  HR: null,
+
   RECORD_ID: false,
+
   CREATOR: false,
+
   CREATED_AT: false,
+
   MODIFIER: false,
+
   MODIFIED_AT: false,
+
+  GROUP: false,
+
+  SUBTABLE: false,
 };

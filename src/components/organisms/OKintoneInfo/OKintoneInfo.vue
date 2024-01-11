@@ -6,9 +6,12 @@ import readAsText from "@/lib/readAsText";
 
 import { JsonObject, JsonPrimitive } from "@/lib/types/Json";
 import { getFormEntry, doAnalyzeForm } from "@/lib/doAnalyzeKintoneTemplate";
+import type { MatchingConfigs } from "@/lib/types/matchings";
+import { MATCHING_CONFIG_TYPES } from "@/lib/matchingConfig";
 
 const getControlInfo = (control: JsonObject) => {
   const type = control.type as string;
+
   let infos: JsonPrimitive[];
   switch (type.toUpperCase()) {
     case "LABEL":
@@ -27,6 +30,7 @@ const getControlInfo = (control: JsonObject) => {
       ];
       break;
   }
+
   return infos;
 };
 
@@ -36,20 +40,109 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
   type LocalMember = {
     json?: JsonObject;
     controls?: JsonObject[];
+    fieldTypes: string[];
+    configs: MatchingConfigs;
   };
   const local: LocalMember = {
     json: undefined,
     controls: undefined,
+    fieldTypes: Object.entries(MATCHING_CONFIG_TYPES).map(([key]) => {
+      return key;
+    }),
+    configs: MATCHING_CONFIG_TYPES,
   };
 
   const model = reactive({
+    appNames: ref(),
     appName: ref(),
+    fieldTypes: ref(
+      Object.entries(MATCHING_CONFIG_TYPES).map(([key, value]) => {
+        return value !== null ? key : "";
+      })
+    ),
+    selectApp: ref(),
     txaValue: ref(""),
   });
 
-  const doEmitUpdateFilles = () => {
+  const reset = () => {
+    model.appName = "";
+    model.selectApp = "";
+    model.txaValue = "";
+  };
+
+  const updateConfig = (): MatchingConfigs => {
+    const fieldTypes = model.fieldTypes;
+    const configs: MatchingConfigs = {};
+
+    local.fieldTypes.forEach((type) => {
+      if (fieldTypes.includes(type)) {
+        const config = MATCHING_CONFIG_TYPES[type];
+        if (config === null) {
+          configs[type] = false;
+        } else {
+          configs[type] = MATCHING_CONFIG_TYPES[type];
+        }
+      } else {
+        configs[type] = null;
+      }
+    });
+
+    local.configs = configs;
+
+    return configs;
+  };
+
+  const updateControls = (): JsonObject[] | undefined => {
+    const json = local.json;
+
+    if (!json) return;
+
+    if (!model.selectApp) return;
+
+    const idx = Number(model.selectApp);
+
+    const apps = json.apps as JsonObject[];
+
+    const app = apps[idx];
+
+    const form = getFormEntry(app);
+
+    const configs = updateConfig();
+
+    const controls = doAnalyzeForm(form).filter((control) => {
+      const type = control.type as string;
+      if (configs[type] === null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    local.controls = controls;
+
+    return controls;
+  };
+
+  const updateTxa = () => {
+    const controls = local.controls;
+    let txaValue = "";
+
+    if (controls) {
+      Array.from(controls).forEach((item) => {
+        const controlInfo = getControlInfo(item);
+
+        txaValue += controlInfo.join("\t") + "\n";
+      });
+    }
+
+    model.txaValue = txaValue;
+  };
+
+  const doEmitUpdateFildes = () => {
     const fields = local.controls;
-    emit("update-fields", { fields });
+    const configs = local.configs;
+
+    emit("update-fields", { fields, configs });
   };
 
   const doChangeFile = (event: Event) => {
@@ -70,30 +163,49 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       return;
     }
 
+    reset();
+
     readAsText(file, "UTF-8").then((reader) => {
       const result = reader.result as string;
 
       const json = JSON.parse(result);
-      const app = json.apps[0];
-      const form = getFormEntry(app);
-      const controls = doAnalyzeForm(form);
+      const appNames: string[] = [];
 
-      let txaValue = "";
-
-      Array.from(controls).forEach((item) => {
-        const controlInfo = getControlInfo(item);
-
-        txaValue += controlInfo.join("\t") + "\n";
+      Array.from(json.apps as JsonObject[]).forEach((app) => {
+        const info = app.info as JsonObject;
+        const name = info.name as string;
+        appNames.push(name);
       });
 
       local.json = json;
-      local.controls = controls;
-
-      model.appName = json.name;
-      model.txaValue = txaValue;
-
-      doEmitUpdateFilles();
+      model.appNames = appNames;
     });
+  };
+
+  const doChangeFieldTypes = (event: Event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    updateControls();
+
+    updateTxa();
+
+    doEmitUpdateFildes();
+  };
+
+  const doChangeAppName = (event: Event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    updateControls();
+
+    updateTxa();
+
+    doEmitUpdateFildes();
   };
 
   const doClickCopy = (event: Event) => {
@@ -110,10 +222,13 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
       navigator.clipboard.writeText(txa.value);
     }
   };
+
   return {
-    //local,
+    local,
     model,
     doChangeFile,
+    doChangeFieldTypes,
+    doChangeAppName,
     doClickCopy,
   };
 };

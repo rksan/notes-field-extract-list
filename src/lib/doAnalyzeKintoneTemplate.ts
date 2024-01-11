@@ -21,6 +21,9 @@ const doAnalyzeColl = (item: JsonObject): JsonObject[] => {
         return doAnalyzeGroup(item);
       case "SUBTABLE":
         return doAnalyzeSubTable(item);
+      /* case "LABEL":
+      case "HR":
+        return []; */
       default:
         return doAnalyzeOther(item);
     }
@@ -38,7 +41,7 @@ const doAnalyzeRow = (row: JsonObject) => {
 const doAnalyzeSubTable = (subTable: JsonObject) => {
   const controlList = subTable.controlList as JsonObject[];
 
-  return doAnalyzeControlList(controlList);
+  return [subTable].concat(doAnalyzeControlList(controlList));
 };
 
 const doAnalyzeControlList = (controlList: JsonObject[]): JsonObject[] => {
@@ -50,7 +53,7 @@ const doAnalyzeControlList = (controlList: JsonObject[]): JsonObject[] => {
 const doAnalyzeGroup = (group: JsonObject): JsonObject[] => {
   const canvasData = group.canvasData as JsonObject[];
 
-  return doAnalyzeCanvasData(canvasData);
+  return [group].concat(doAnalyzeCanvasData(canvasData));
 };
 
 const doAnalyzeCanvasData = (canvasData: JsonObject[]): JsonObject[] => {

@@ -2,6 +2,7 @@ import type { JsonObject } from "./types/Json";
 import type { MatchingConfigs } from "./types/matchings";
 
 import { getMatchingAll, matchingType } from "./matching";
+import { MATCHING_CONFIG_TYPES } from "./matchingConfig";
 
 export interface FieldInfo {
   toArray(): string[];
@@ -117,13 +118,14 @@ class CFieldMapping implements FieldMapping {
     return this.#labels;
   }
 
-  do(matchings?: MatchingConfigs) {
+  do(options: { matchings?: MatchingConfigs; configs: MatchingConfigs }) {
     const notesFields = Array.from(this.#notesFields);
     let kintoneFields = Array.from(this.#kintoneFields);
 
     const matchedInfo: { [code: string]: Element } = {};
 
-    if (matchings) {
+    if (options.matchings !== undefined) {
+      const matchings = options.matchings;
       kintoneFields = kintoneFields.filter((kintoneField: JsonObject) => {
         const kCode = kintoneField.var as string;
         const config = matchings[kCode];
@@ -137,10 +139,13 @@ class CFieldMapping implements FieldMapping {
           return true;
         }
 
-        const idx = notesFields.findIndex(
-          (notesField) =>
-            notesField && matchingType(kintoneField, notesField, config)
-        );
+        const idx = notesFields.findIndex((notesField) => {
+          if (notesField) {
+            return matchingType(kintoneField, notesField, config);
+          } else {
+            return false;
+          }
+        });
 
         if (0 < idx) {
           // match
@@ -155,7 +160,7 @@ class CFieldMapping implements FieldMapping {
     }
 
     if (0 < kintoneFields.length && 0 < notesFields.length) {
-      const matchingAll = getMatchingAll();
+      const matchingAll = getMatchingAll(options.configs);
 
       matchingAll.forEach((matching) => {
         if (0 < kintoneFields.length && 0 < notesFields.length)
@@ -180,10 +185,16 @@ class CFieldMapping implements FieldMapping {
     }
 
     Array.from(this.#kintoneFields).forEach((kintoneField) => {
-      const kCode = kintoneField.var as string;
-      const notesField = matchedInfo[kCode];
-      const fieldInfo = new CFieldInfo(kintoneField, notesField);
-      this.#result.push(fieldInfo);
+      const kType = kintoneField.type as string;
+
+      if (MATCHING_CONFIG_TYPES[kType] === null) {
+        // none.
+      } else {
+        const kCode = kintoneField.var as string;
+        const notesField = matchedInfo[kCode];
+        const fieldInfo = new CFieldInfo(kintoneField, notesField);
+        this.#result.push(fieldInfo);
+      }
     });
   }
 
@@ -202,11 +213,12 @@ class CFieldMapping implements FieldMapping {
 export const fieldMapping = (
   kintoneFields: JsonObject[],
   notesFields: Element[],
-  options?: {
-    matchngs?: MatchingConfigs;
+  options: {
+    matchings?: MatchingConfigs;
+    configs: MatchingConfigs;
   }
 ): FieldMapping => {
   const mapping = new CFieldMapping(kintoneFields, notesFields);
-  mapping.do(options?.matchngs);
+  mapping.do(options);
   return mapping;
 };
