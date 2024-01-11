@@ -13,7 +13,30 @@
   </div>
 
   <div class="mb-3">
-    <label for="app-name-kintone" class="form-label">json:</label>
+    <details>
+      <summary class="form-label">field type:</summary>
+      <div class="row">
+        <template v-for="(type,idx) in local.fieldTypes" :key="idx">
+          <div class="form-check col-auto">
+            <input
+              class="btn-check"
+              type="checkbox"
+              :id="'field-type-kintone-'+idx"
+              :value="type"
+              v-model="model.fieldTypes"
+              @change="doChangeFieldTypes"
+            />
+            <label class="btn" :for="'field-type-kintone-'+idx">
+              {{type}}
+            </label>
+          </div>
+        </template>
+      </div>
+    </details>
+  </div>
+
+  <div class="mb-3">
+    <label for="app-name-kintone" class="form-label">apps:</label>
     <select
       id="app-name-kintone"
       class="form-select"

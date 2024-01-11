@@ -6,26 +6,34 @@ import {
   OTableVue,
 } from "@/components/organisms";
 import { FieldMapping, fieldMapping } from "@/lib/mapping";
-import { JsonObject } from "@/lib/types/Json";
+import type { JsonObject } from "@/lib/types/Json";
+import type { MatchingConfigs } from "@/lib/types/matchings";
+import { MATCHING_CONFIG_TYPES } from "@/lib/matchingConfig";
 
 const setup = () => {
   type LocalMember = {
     kintoneFields?: JsonObject[];
     notesFields?: Element[];
     fieldMapping?: FieldMapping;
+    configs?: MatchingConfigs;
   };
   const local: LocalMember = {
     kintoneFields: undefined,
     notesFields: undefined,
     fieldMapping: undefined,
+    configs: undefined,
   };
 
   const model = reactive({
     tables: ref(),
   });
 
-  const handleEmitUpdateFieldsOnKintone = (data: { fields: [] }) => {
+  const handleEmitUpdateFieldsOnKintone = (data: {
+    fields: [];
+    configs: MatchingConfigs;
+  }) => {
     local.kintoneFields = data.fields;
+    local.configs = data.configs;
   };
 
   const handleEmitUpdateFieldsOnNotes = (data: { fields: [] }) => {
@@ -39,7 +47,9 @@ const setup = () => {
     }
 
     if (local.kintoneFields && local.notesFields) {
-      const mapping = fieldMapping(local.kintoneFields, local.notesFields);
+      const mapping = fieldMapping(local.kintoneFields, local.notesFields, {
+        configs: local.configs || MATCHING_CONFIG_TYPES,
+      });
 
       const result = mapping.result;
       const tables = {
