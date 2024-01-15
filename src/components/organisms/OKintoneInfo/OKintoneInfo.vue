@@ -75,6 +75,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     const configs: MatchingConfigs = {};
 
     local.fieldTypes.forEach((type) => {
+      console.log("type=", type);
       if (fieldTypes.includes(type)) {
         const config = MATCHING_CONFIG_TYPES[type];
         if (config === null) {
@@ -97,7 +98,7 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
 
     if (!json) return;
 
-    if (!model.selectApp) return;
+    if (model.selectApp === "") return;
 
     const idx = Number(model.selectApp);
 
