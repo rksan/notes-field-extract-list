@@ -22,6 +22,54 @@ const getControlInfo = (control: JsonObject) => {
       ];
       break;
 
+    case "MULTIPLE_LINE_TEXT":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "MULTI_LINE_TEXT",
+      ];
+      break;
+
+    case "DECIMAL":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "NUMBER",
+      ];
+      break;
+
+    case "SINGLE_CHECK":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "RADIO_BUTTON",
+      ];
+      break;
+
+    case "MULTIPLE_CHECK":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "CHECK_BOX",
+      ];
+      break;
+
+    case "MULTIPLE_SELECT":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "MULTI_SELECT",
+      ];
+      break;
+
+    case "SINGLE_SELECT":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "DROP_DOWN",
+      ];
+      break;
+
     default:
       infos = [
         control.var as JsonPrimitive,
@@ -75,7 +123,6 @@ const setup: ComponentOptions["setup"] = ($props, { emit }) => {
     const configs: MatchingConfigs = {};
 
     local.fieldTypes.forEach((type) => {
-      console.log("type=", type);
       if (fieldTypes.includes(type)) {
         const config = MATCHING_CONFIG_TYPES[type];
         if (config === null) {
