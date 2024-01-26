@@ -22,6 +22,14 @@ const getControlInfo = (control: JsonObject) => {
       ];
       break;
 
+    case "EDITOR":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "RTCH_TEXT",
+      ];
+      break;
+
     case "MULTIPLE_LINE_TEXT":
       infos = [
         control.var as JsonPrimitive,
@@ -67,6 +75,38 @@ const getControlInfo = (control: JsonObject) => {
         control.var as JsonPrimitive,
         control.label as JsonPrimitive,
         "DROP_DOWN",
+      ];
+      break;
+
+    case "SPACER":
+      infos = [
+        control.elementId as JsonPrimitive,
+        control.label as JsonPrimitive,
+        control.type as JsonPrimitive,
+      ];
+      break;
+
+    case "RECORD_ID":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "RECORD_NUMBER",
+      ];
+      break;
+
+    case "CREATED_AT":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "CREATED_TIME",
+      ];
+      break;
+
+    case "MODIFIED_AT":
+      infos = [
+        control.var as JsonPrimitive,
+        control.label as JsonPrimitive,
+        "MODIFIED_TIME",
       ];
       break;
 
