@@ -26,7 +26,7 @@ const getControlInfo = (control: JsonObject) => {
       infos = [
         control.var as JsonPrimitive,
         control.label as JsonPrimitive,
-        "RTCH_TEXT",
+        "RICH_TEXT",
       ];
       break;
 
@@ -106,7 +106,7 @@ const getControlInfo = (control: JsonObject) => {
       infos = [
         control.var as JsonPrimitive,
         control.label as JsonPrimitive,
-        "MODIFIED_TIME",
+        "UPDATED_TIME",
       ];
       break;
 
